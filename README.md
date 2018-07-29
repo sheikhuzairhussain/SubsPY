@@ -8,5 +8,5 @@ A no-nonsense subtitles downloader in Python 3 by @sheikhuzairhussain
 ## Instructions (Advanced)
 * `$ git clone https://github.com/sheikhuzairhussain/subspy.git`
 * `$ cd subspy`
-* `$ python subspy`
+* `$ python SubsPY.exe`
 * Drag your movie/TV show file into the console window and press enter.
