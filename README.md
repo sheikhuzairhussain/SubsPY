@@ -1,7 +1,7 @@
 # SubsPY
 A no-nonsense subtitles downloader in Python 3.
 
-##Instructions
+## Instructions
 * `git clone https://github.com/sheikhuzairhussain/subspy.git`
 * `cd subspy`
 * `python subspy`
