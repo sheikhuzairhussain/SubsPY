@@ -1,0 +1,1 @@
+pyinstaller -i icon.ico SubsPY.py --onefile
