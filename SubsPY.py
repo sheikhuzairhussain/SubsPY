@@ -13,8 +13,8 @@ def get_path():
 	i = 0
 	while (os.path.isfile(path) != True):
 		if (i>0):
-			print("Invalid/No file. ")
-		path = input("Drag file to this window and press enter... \n\n").strip("/'").strip('/"');
+			print("Invalid/No file selected. ")
+		path = input("Drag the movie/TV episode file to this window and press enter: \n\n").strip("/'").strip('/"');
 		i+=1
 	return path
 
@@ -30,6 +30,8 @@ def main():
 		code = request.status_code
 		if (code == 404):
 			print("Subtitles for this file could not be found.")
+			main()
+			return
 		else:
 			print("\nAn HTTP error has occured. Please try again.")
 			main()
@@ -47,6 +49,7 @@ def main():
 		print("\nSubtitles downloaded successfully! Enter [y] for another file.");
 		if (str(input()).lower()=="y"):
 			main()
+			return
 
 print(' ___       _                    \n/ __> _ _ | |_  ___    ___  _ _ \n\__ \| | || . \<_-< _ | . \| | |\n<___/`___||___//__/<_>|  _/`_. |\n                      |_|  <___  v0.2 by @sheikhuzairhussain\n')
 main()
