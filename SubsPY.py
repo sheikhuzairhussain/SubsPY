@@ -4,6 +4,8 @@ from pythonopensubtitles.utils import File
 from pathlib import Path
 from termcolor import colored, cprint
 
+keep_all = False
+
 def title():
 	print(colored(' ___       _                    \n/ __> _ _ | |_  ___    ___  _ _ \n\__ \| | || . \<_-< _ | . \| | |\n<___/`___||___//__/<_>|  _/`_. |\n                      |_|  <___  ', 'yellow') + colored("v0.5.0", 'magenta') + " by " + colored("@sheikhuzairhussain\n", 'magenta'))
 
@@ -19,7 +21,7 @@ def get_path():
 	while (os.path.isfile(path) != True and os.path.isdir(path) != True):
 		if (i>0):
 			print(colored("[ ERROR ] Invalid file/folder selected. \n", "red"))
-		path = input("Drag the " + colored('movie/TV episode/folder', 'blue') + " to this window and press enter:\n").strip("/'").strip('/"');
+		path = input("Drag the " + colored('movie/TV episode/folder', 'blue') + " to this window and press enter:\n").strip("/'").strip('/"')
 		i+=1
 	return path
 
@@ -46,7 +48,6 @@ def download(path, dir_mode = False):
 
 	id_subtitle_file = data[0].get('IDSubtitleFile')
 
-	#CONFLICT
 	existing_subtitle = os.path.join(os.path.dirname(path), Path(os.path.basename(path)).stem + ".srt")
 
 
@@ -54,17 +55,24 @@ def download(path, dir_mode = False):
 	suffix = ""
 
 	if (os.path.isfile(existing_subtitle)):
-		suffix = ".subspy"
+		suffix = ".SubsPY"
 		print(colored("\nSubtitles already exist for this file.", 'red'))
-		r = input(colored('Overwrite [o], keep existing [k], or keep both [b]? : ', 'magenta'))
-		if r.lower() == "o":
-			suffix = ""
-			print(colored("Overwriting existing Subtitles", "cyan"));
-		elif r.lower() == "k":
-			print(colored("Skipping this download.", "cyan"));
-			abort_flag = True
+		
+		if globals()['keep_all']:
+			print(colored("Keeping both subtitles (added prefix) for ALL FILES.", "cyan"))
 		else:
-			print(colored("Keeping both files (added prefix).", "cyan"))
+			r = input(colored('Overwrite [o], keep existing [k], keep both [b] or keep both for all conflicts [a]? : ', 'magenta'))
+			if r.lower() == "o":
+				suffix = ""
+				print(colored("Overwriting existing Subtitles", "cyan"))
+			elif r.lower() == "k":
+				print(colored("Skipping this download.", "cyan"))
+				abort_flag = True
+			elif r.lower() == "a":
+				globals()['keep_all'] = True
+				print(colored("Keeping both subtitles (added prefix) for ALL FILES.", "cyan"))
+			else:
+				print(colored("Keeping both subtitles (added prefix) for this file.", "cyan"))
 
 
 	if not abort_flag:
@@ -75,13 +83,15 @@ def download(path, dir_mode = False):
 			input("\nSubtitles could not be downloaded for " + os.path.basename(path))
 			return
 
-		print(colored("\nSubtitles downloaded successfully!", "green"));
+		print(colored("\nSubtitles downloaded successfully!", "green"))
 		
 	if not dir_mode:
 		print(colored('=============================================================================', 'yellow'))
 
 
 def main():
+	globals()['keep_all'] = False
+
 	path = get_path()
 
 	if os.path.isfile(path):
