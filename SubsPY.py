@@ -26,6 +26,11 @@ def get_path():
 	return path
 
 def download(path, dir_mode = False):
+	if not dir_mode:
+		print("")
+
+	print(colored('=============================================================================', 'yellow'))
+
 	ost = OpenSubtitles() 
 	ost.login('subspy', 'subspy')
 
@@ -35,13 +40,8 @@ def download(path, dir_mode = False):
 	data = ost.search_subtitles([{'sublanguageid': 'eng', 'moviehash': f.get_hash(), 'moviebytesize': f.size}])
 
 	if data is None or len(data) == 0:
-		print("Subtitles could not be found for " + os.path.basename(path))
+		print(colored("Subtitles could not be found for " + os.path.basename(path), 'red'))
 		return
-
-	if not dir_mode:
-		print("")
-
-	print(colored('=============================================================================', 'yellow'))
 
 	print("[ TITLE  ] " + colored(data[0].get('MovieName') + " (" + data[0].get('MovieYear') + ")", 'cyan'))
 	print("[ RATING ] " + colored(data[0].get('MovieImdbRating') + "/10 on IMDb", 'cyan'))
@@ -59,7 +59,7 @@ def download(path, dir_mode = False):
 		print(colored("\nSubtitles already exist for this file.", 'red'))
 		
 		if globals()['keep_all']:
-			print(colored("Keeping both subtitles (added prefix) for ALL FILES.", "cyan"))
+			print(colored("Keeping both subtitles (added suffix) for ALL FILES.", "cyan"))
 		else:
 			r = input(colored('Overwrite [o], keep existing [k], keep both [b] or keep both for all conflicts [a]? : ', 'magenta'))
 			if r.lower() == "o":
@@ -70,9 +70,9 @@ def download(path, dir_mode = False):
 				abort_flag = True
 			elif r.lower() == "a":
 				globals()['keep_all'] = True
-				print(colored("Keeping both subtitles (added prefix) for ALL FILES.", "cyan"))
+				print(colored("Keeping both subtitles (added suffix) for ALL FILES.", "cyan"))
 			else:
-				print(colored("Keeping both subtitles (added prefix) for this file.", "cyan"))
+				print(colored("Keeping both subtitles (added suffix) for this file.", "cyan"))
 
 
 	if not abort_flag:
@@ -80,7 +80,7 @@ def download(path, dir_mode = False):
 		status = ost.download_subtitles([id_subtitle_file], override_filenames=overrides, output_directory=os.path.dirname(path), extension='srt')
 
 		if status is None:
-			input("\nSubtitles could not be downloaded for " + os.path.basename(path))
+			input(colored("\nSubtitles could not be downloaded for " + os.path.basename(path), 'red'))
 			return
 
 		print(colored("\nSubtitles downloaded successfully!", "green"))
