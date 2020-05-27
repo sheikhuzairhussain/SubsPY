@@ -108,5 +108,6 @@ def main():
 		main()
 		return
 
+os.system('color')
 title()
 main()
