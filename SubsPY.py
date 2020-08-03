@@ -3,6 +3,7 @@ from pythonopensubtitles.opensubtitles import OpenSubtitles
 from pythonopensubtitles.utils import File
 from pathlib import Path
 from termcolor import colored, cprint
+from difflib import SequenceMatcher
 
 keep_all = False
 
@@ -43,10 +44,30 @@ def download(path, dir_mode = False):
 		print(colored("Subtitles could not be found for " + os.path.basename(path), 'red'))
 		return
 
-	print("[ TITLE  ] " + colored(data[0].get('MovieName') + " (" + data[0].get('MovieYear') + ")", 'cyan'))
-	print("[ RATING ] " + colored(data[0].get('MovieImdbRating') + "/10 on IMDb", 'cyan'))
+	best_match = {"index": 0, "ratio": 0}
 
-	id_subtitle_file = data[0].get('IDSubtitleFile')
+	for current_index, search_result in enumerate(data):
+		current_ratio = SequenceMatcher(None, search_result.get('MovieName'), os.path.basename(path).replace(".", " ")).ratio()
+
+		if (current_ratio > best_match['ratio']):
+			best_match['index'] = current_index
+			best_match['ratio'] = current_ratio
+
+		if (current_index > 10):
+			break
+
+	if (best_match['ratio'] < 0.5):
+		print(colored("Subtitles could not be found for " + os.path.basename(path), 'red'))
+		return
+
+	print("[ TITLE  ] " + colored(data[best_match['index']].get('MovieName') + " (" + data[best_match['index']].get('MovieYear') + ")", 'cyan'))
+	print("[ RATING ] " + colored(data[best_match['index']].get('MovieImdbRating') + "/10 on IMDb", 'cyan'))
+
+	confidence = round(best_match['ratio'] * 100, 1)
+
+	print("Matched with " + str(confidence) + '% confidence')
+
+	id_subtitle_file = data[best_match['index']].get('IDSubtitleFile')
 
 	existing_subtitle = os.path.join(os.path.dirname(path), Path(os.path.basename(path)).stem + ".srt")
 
